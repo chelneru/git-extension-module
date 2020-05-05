@@ -38,4 +38,8 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
+
+//check config files
+let framework = require('./app/framework');
+framework.GetIdentity();
 module.exports = app;
