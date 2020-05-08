@@ -1,0 +1,12 @@
+<%- include('header'); -%>
+
+<div class="container-fluid">
+    <form id="repo_form" method="POST" action="/set-repo">
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" placeholder="Path to the repository" name="repo" aria-label="Repo"
+                   aria-describedby="basic-addon1" value="">
+        </div>
+
+        <button type="submit" class="btn btn-info repo-submit">Save</button>
+    </form>
+</div>

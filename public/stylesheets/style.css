@@ -1,8 +1,26 @@
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+
+.line {
+  border-bottom: 1px solid #eeeeee;
+  margin-bottom: 10px;
+
+}
+.row-label {
+  display: inline-block;
+  width: 10%;
+  vertical-align: top;
+}
+.row-value {
+  display: inline-block;
+  width: 50%;
+
 }
 
-a {
-  color: #00B7FF;
+.sync-row {
+  text-align: right;
+}
+.files-container {
+  height: 57%;
+}
+.footer-row {
+  border-bottom: 0;
 }

@@ -1,0 +1,26 @@
+<%- include('header'); -%>
+
+<link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+
+<div class="line title-row">
+    <div class="">Git - version control</div>
+</div>
+<div class="line sync-time-row">
+    <div class="row-label" style="width: 150px">Last time synced:</div>
+    <div class="row-value">27-apr-2020 12:04:25</div>
+</div>
+<div class="line diff-row">
+    <div>Changed files</div>
+    <div class="files-container">
+        <% for(var i=0; i < fileChanges.files.length; i++) { %>
+        <div><span class="file-name"><%= fileChanges.files[i].file %></span>
+            <span class="file-status"></span></div>
+        <% } %>
+    </div>
+</div>
+<div class="line sync-row footer-row">
+    <button class="btn btn-info">Publish work</button>
+    <button class="btn btn-info">Update work</button>
+</div>
+
+

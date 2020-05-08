@@ -8,11 +8,10 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
 var app = express();
-
+global.moduleConfig = {};
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
-
+app.set('view engine', 'ejs');
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -26,7 +25,7 @@ app.use('/users', usersRouter);
 app.use(function(req, res, next) {
   next(createError(404));
 });
-
+global.test = true;
 // error handler
 app.use(function(err, req, res, next) {
   // set locals, only providing error in development
@@ -35,11 +34,27 @@ app.use(function(err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  console.log(err.toString()+' at '+err.stack.toString())
+  res.render('error', {error: err.toString(), stack: err.stack.toString()});
 });
+console.log('starting git extension');
 
+const internal = require('./app/internal');
 
-//check config files
-let framework = require('./app/framework');
+if(global.test === true) {
+  global.identity = {
+    name: 'alin',
+    email: 'alin@test.com',
+    folderPath: 'C:\\Users\\Alin\\distcollab',
+    projectPath: 'C:\\Users\\Alin\\distcollab\\project'
+  };
+}
+else {
+  let framework = require('./app/framework');
 framework.GetIdentity();
+}
+//check config files
+
+//mock identity
+
 module.exports = app;
