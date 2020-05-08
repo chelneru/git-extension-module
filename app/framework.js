@@ -47,9 +47,25 @@ exports.UpdateConfig = () => {
         })
 
 };
+exports.PublishSharedData =(sharedData) => {
+    axios.post('http://localhost:3000/extension/publish-shared-data', {
+            name:'git',
+            data: sharedData
+        }
+    )
+        .then((res) => {
+            if (res.data.status) {
+                console.log('Shared data published successfully!');
+            }
+        })
+        .catch((error) => {
+            console.error(error)
+        })
+}
 exports.PublishData = (bareRepoLocalPath) => {
     // publishing data for this extension modules means we will publish hash for the bare repo
     axios.post('http://localhost:3000/extension/publish-data', {
+        name:'git',
             path: bareRepoLocalPath
         }
     )
@@ -66,7 +82,9 @@ exports.PublishData = (bareRepoLocalPath) => {
 exports.SyncronizeData = (bareRepoLocalPath) => {
     // syncronizing data for this extension modules means we will update the local repo
     axios.post('http://localhost:3000/extension/update-data', {
-            path: bareRepoLocalPath
+        name:'git',
+
+        path: bareRepoLocalPath
         }
     )
         .then((res) => {

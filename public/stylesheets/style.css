@@ -24,3 +24,25 @@
 .footer-row {
   border-bottom: 0;
 }
+
+.status-deleted {
+  color: red;
+}
+.status-added {
+  color: #61b830;
+}
+.status-modified {
+  color: #d4d42b;
+}
+.files-container > div {
+  width: 100%;
+}
+.files-container > div > span {
+  display: inline-block;
+}
+.files-container .file-name {
+  width: 70%;
+}
+.files-container .file-status {
+  width: 20%;
+}

@@ -12,6 +12,7 @@ router.get('/', async function(req, res, next) {
 
   }
  let diffChanges = await internal.GetFilesStatus();
+
   res.render('home', { fileChanges:diffChanges});
 });
 
@@ -25,5 +26,18 @@ router.post('/set-repo', async function (req, res, next) {
   return res.redirect('/');
 });
 
+router.post('/commit', async function (req, res, next) {
+  let response = internal.CommitRepository(req.body.message);
+  return res.json(response);
+});
+
+router.post('/push', async function (req, res, next) {
+  return res.json(internal.PushRepository());
+
+});
+
+router.post('/pull', async function (req, res, next) {
+  return res.json(internal.PullRepository);
+});
 
 module.exports = router;

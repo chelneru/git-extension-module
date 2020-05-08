@@ -53,6 +53,9 @@ else {
   let framework = require('./app/framework');
 framework.GetIdentity();
 }
+internal.InitializeGitConfig();
+internal.GetCommits();
+console.log('done initializing');
 //check config files
 
 //mock identity
