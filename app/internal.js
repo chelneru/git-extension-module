@@ -63,7 +63,9 @@ exports.GetFilesStatus = async () => {
 }
 
 exports.ParseGitStatus = (raw_result) => {
+
     let parsedResult = [];
+    if(raw_result !== null) {
     raw_result = raw_result.trim();
     let array_result = raw_result.split("\n");
     for (let iter = 0; iter < array_result.length; iter++) {
@@ -85,6 +87,7 @@ exports.ParseGitStatus = (raw_result) => {
             file: array_result[iter].slice(2, array_result[iter].length)
         }
         parsedResult.push(resultObject);
+    }
     }
     return parsedResult;
 }
