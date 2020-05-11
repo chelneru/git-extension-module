@@ -34,8 +34,9 @@ exports.CommitRepository = async (message) => {
 
 //the bare repo is used to communicate with other peers in the node. We syncronize the bare repo and the local repo with work
 //will push/pull on its own bare repo.
-exports.CreateBareRepo = async (projectPath, repoPath) => {
+exports.CreateBareRepo = async (projectPath) => {
     let bareRepoPath = path.join(projectPath, 'git-extension', 'bare-repo');
+    let repoPath = projectPath;
     if (!fs.existsSync(bareRepoPath)) {
         await global.git.clone(repoPath, bareRepoPath, ['--bare']);
         global.moduleConfig.bareRepoPath = bareRepoPath;
@@ -54,7 +55,6 @@ exports.InitializeGitConfig = () => {
     global.git.addRemote('origin', global.moduleConfig.bareRepoPath);
 }
 exports.GetFilesStatus = async () => {
-    // return await global.git.raw('git status -s');
     return exports.ParseGitStatus(await global.git.raw(
         [
             'status',

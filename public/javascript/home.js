@@ -1,4 +1,6 @@
-$(document).on('ready', function () {
+
+
+$(document).ready(function () {
     console.log('eerer');
 
     $('#git-toast').toast();

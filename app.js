@@ -48,6 +48,7 @@ if(global.test === true) {
     folderPath: 'C:\\Users\\Alin\\distcollab',
     projectPath: 'C:\\Users\\Alin\\distcollab\\project'
   };
+  global.moduleConfig.repoPath = global.identity.projectPath;
 }
 else {
   let framework = require('./app/framework');
