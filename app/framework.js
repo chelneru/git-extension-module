@@ -1,22 +1,40 @@
 const axios = require('axios');
-
-
+const internal = require('./internal');
+const path = require('path');
 exports.GetIdentity = () => {
+    axios.interceptors.response.use(
+        function(response) {
+            global.connected = true;
+            return response;
+        },
+        function(err) {
+            if(err.code === "ECONNREFUSED") {
+                //we cannot reach the framework.
+                console.log('Cannot reach framework.')
+            }
 
+            return Promise.reject(err);
+        }
+    );
     axios.post('http://localhost:3000/extension/identity', {
         name: 'git',
     })
-        .then((res) => {
-            // console.log(`statusCode: ${res.statusCode}`)
+        .then(async (res) => {
             if(res.data.status === true) {
-            global.identity = {
-                name: res.data.identitty.name,
-                email: res.data.identity.email,
-                folderPath: res.data.identity.folderPath,
-                projectPath: res.data.identity.projectPath
-            };
-            global.moduleConfig = res.data.config;
-            console.log('Retrieved identity successfully!');
+                let new_identity = {
+                    name: res.data.identity.name,
+                    email: res.data.identity.email,
+                    is_author: res.data.identity.is_author,
+                    projectPath:res.data.identity.projectPath
+                };
+
+                global.moduleConfig.identity = {...global.moduleConfig.identity, ...new_identity}; //update new identity
+                global.moduleConfig.bareRepoPath = path.join(global.moduleConfig.identity.projectPath,'git-extension','bare-repo');
+                internal.SaveConfig();
+                console.log('Retrieved identity for git successfully!');
+
+                internal.GetCommits();
+                console.log('done initializing');
             }
             else {
                 console.log('Failed to get valid identity information.');
@@ -24,29 +42,17 @@ exports.GetIdentity = () => {
             }
         })
         .catch((error) => {
-            console.error(error)
-        })
-
-};
-
-exports.UpdateConfig = () => {
-
-    axios.post('http://localhost:3000/extension/update-config', {
-        config:{
-            name:'git',
-            config:global.moduleConfig
-        }
-    })
-        .then((res) => {
-            if(res.data.status) {
-                console.log('Config stored successfully!');
+            console.error('Error getting identity information:',error.toString());
+            if(global.connected === false) {
+            setTimeout(function () {
+                exports.GetIdentity();
+            },3000);
             }
         })
-        .catch((error) => {
-            console.error(error)
-        })
 
 };
+
+
 exports.PublishSharedData =(sharedData) => {
     axios.post('http://localhost:3000/extension/publish-shared-data', {
             name:'git',
@@ -62,11 +68,12 @@ exports.PublishSharedData =(sharedData) => {
             console.error(error)
         })
 }
-exports.PublishData = (bareRepoLocalPath) => {
+exports.PublishData = (sourcePath,folderName) => {
     // publishing data for this extension modules means we will publish hash for the bare repo
     axios.post('http://localhost:3000/extension/publish-data', {
         name:'git',
-            path: bareRepoLocalPath
+            path: sourcePath,
+        folder:folderName,
         }
     )
         .then((res) => {
@@ -79,12 +86,12 @@ exports.PublishData = (bareRepoLocalPath) => {
         })
 }
 
-exports.SyncronizeData = (bareRepoLocalPath) => {
+exports.SyncronizeData = (folderName,targetPath) => {
     // syncronizing data for this extension modules means we will update the local repo
     axios.post('http://localhost:3000/extension/update-data', {
         name:'git',
-
-        path: bareRepoLocalPath
+        path: targetPath,
+        folder:folderName
         }
     )
         .then((res) => {
