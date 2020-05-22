@@ -19,7 +19,8 @@
   text-align: right;
 }
 .files-container {
-  height: 57%;
+  height: 43%;
+  overflow-y: auto;
 }
 .footer-row {
   border-bottom: 0;

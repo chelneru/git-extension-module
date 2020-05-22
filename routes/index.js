@@ -2,7 +2,6 @@ var express = require('express');
 var router = express.Router();
 const internal = require('../app/internal');
 const framework = require('../app/framework');
-const path = require('path');
 
 /* GET home page. */
 router.get('/', async function(req, res, next) {
@@ -14,13 +13,9 @@ router.get('/', async function(req, res, next) {
       return res.redirect('/set-repo');
   }
 
-
-
  let diffChanges = internal.GetFilesStatus;
      return  res.render('home', { fileChanges:diffChanges});
-
 });
-
 
 router.post('/commit', async function (req, res, next) {
     console.log('received commit message ',req.body.message);
@@ -57,7 +52,7 @@ router.post('/getfilestatus', async function (req, res, next) {
 
 });
 
-
+global.connected
 router.post('/pull', async function (req, res, next) {
   return res.json(await internal.PullRepository);
 });
@@ -67,6 +62,10 @@ router.post('/status', async function (req, res, next) {
 });
 router.get('/loading', async function (req, res, next) {
     return res.render('loading');
+});
+
+router.post('/get-shared-data', async function (req, res, next) {
+    return res.json(await framework.RetrieveSharedData());
 });
 
 

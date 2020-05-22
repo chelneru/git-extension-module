@@ -3,12 +3,12 @@ const internal = require('./internal');
 const path = require('path');
 exports.GetIdentity = () => {
     axios.interceptors.response.use(
-        function(response) {
+        function (response) {
             global.connected = true;
             return response;
         },
-        function(err) {
-            if(err.code === "ECONNREFUSED") {
+        function (err) {
+            if (err.code === "ECONNREFUSED") {
                 //we cannot reach the framework.
                 console.log('Cannot reach framework.')
             }
@@ -20,42 +20,41 @@ exports.GetIdentity = () => {
         name: 'git',
     })
         .then(async (res) => {
-            if(res.data.status === true) {
+            if (res.data.status === true) {
                 let new_identity = {
                     name: res.data.identity.name,
                     email: res.data.identity.email,
                     is_author: res.data.identity.is_author,
-                    projectPath:res.data.identity.projectPath
+                    projectPath: res.data.identity.projectPath
                 };
 
                 global.moduleConfig.identity = {...global.moduleConfig.identity, ...new_identity}; //update new identity
-                global.moduleConfig.bareRepoPath = path.join(global.moduleConfig.identity.projectPath,'git-extension','bare-repo');
+                global.moduleConfig.bareRepoPath = path.join(global.moduleConfig.identity.projectPath, 'git-extension', 'bare-repo');
                 internal.SaveConfig();
                 console.log('Retrieved identity for git successfully!');
 
                 internal.GetCommits();
                 console.log('done initializing');
-            }
-            else {
+            } else {
                 console.log('Failed to get valid identity information.');
 
             }
         })
         .catch((error) => {
-            console.error('Error getting identity information:',error.toString());
-            if(global.connected === false) {
-            setTimeout(function () {
-                exports.GetIdentity();
-            },3000);
+            console.error('Error getting identity information:', error.toString());
+            if (global.connected === false) {
+                setTimeout(function () {
+                    exports.GetIdentity();
+                }, 3000);
             }
         })
 
 };
 
 
-exports.PublishSharedData =(sharedData) => {
+exports.PublishSharedData = (sharedData) => {
     axios.post('http://localhost:3000/extension/publish-shared-data', {
-            name:'git',
+            name: 'git',
             data: sharedData
         }
     )
@@ -68,12 +67,27 @@ exports.PublishSharedData =(sharedData) => {
             console.error(error)
         })
 }
-exports.PublishData = (sourcePath,folderName) => {
+exports.RetrieveSharedData = () => axios.post('http://localhost:3000/extension/retrieve-shared-data', {
+        name: 'git',
+        data: sharedData
+    }
+)
+    .then((res) => {
+        if (res.data.status) {
+            global.sharedData = res.data.content;
+            return {status:true,content:global.sharedData}
+        }
+    })
+    .catch((error) => {
+        console.error('Error retrieving shared data:',error.toString());
+    })
+
+exports.PublishData = (sourcePath, folderName) => {
     // publishing data for this extension modules means we will publish hash for the bare repo
     axios.post('http://localhost:3000/extension/publish-data', {
-        name:'git',
+            name: 'git',
             path: sourcePath,
-        folder:folderName,
+            folder: folderName,
         }
     )
         .then((res) => {
@@ -86,12 +100,12 @@ exports.PublishData = (sourcePath,folderName) => {
         })
 }
 
-exports.SyncronizeData = (folderName,targetPath) => {
+exports.SyncronizeData = (folderName, targetPath) => {
     // syncronizing data for this extension modules means we will update the local repo
     axios.post('http://localhost:3000/extension/update-data', {
-        name:'git',
-        path: targetPath,
-        folder:folderName
+            name: 'git',
+            path: targetPath,
+            folder: folderName
         }
     )
         .then((res) => {

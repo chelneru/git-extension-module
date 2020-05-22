@@ -3,9 +3,10 @@ const framework = require('./framework');
 const fs = require('fs');
 
 exports.LoadConfig = () => {
+    global.sharedData = {};
     const appRoot = require('app-root-path').toString();
     if (fs.existsSync(path.join(appRoot, 'settings.json'))) {
-        let rawdata = fs.readFileSync('settings.json');
+        let rawdata = fs.readFileSync(path.join(appRoot,'settings.json'));
         global.moduleConfig = JSON.parse(rawdata.toString());
     } else {
         global.moduleConfig = {};

@@ -11,6 +11,7 @@ console.log('starting git extension');
 
 const internal = require('./app/internal');
 global.connected = false;
+
 if (global.test === true) {
     // global.identity = {
     //     name: 'alin',
@@ -21,6 +22,8 @@ if (global.test === true) {
     // global.moduleConfig.repoPath = global.identity.projectPath;
 } else {
     let framework = require('./app/framework');
+    let internal = require('./app/internal');
+    internal.LoadConfig();
     framework.GetIdentity();
 }
 
@@ -58,8 +61,7 @@ app.use(function (err, req, res, next) {
 });
 
 
-//check config files
 
-//mock identity
+
 
 module.exports = app;
