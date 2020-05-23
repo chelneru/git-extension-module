@@ -6,9 +6,13 @@ exports.LoadConfig = () => {
     global.sharedData = {};
     const appRoot = require('app-root-path').toString();
     if (fs.existsSync(path.join(appRoot, 'settings.json'))) {
-        let rawdata = fs.readFileSync(path.join(appRoot,'settings.json'));
-        global.moduleConfig = JSON.parse(rawdata.toString());
-    } else {
+        try {
+            let rawdata = fs.readFileSync(path.join(appRoot, 'settings.json'));
+            global.moduleConfig = JSON.parse(rawdata.toString());
+        }catch (e) {
+            console.log('Error loading config from settings file. The file does not have valid JSON:',e.toString());
+        }
+    }else {
         global.moduleConfig = {};
         exports.SaveConfig();
     }
@@ -132,7 +136,6 @@ exports.InitializeGitConfig = async () => {
 }
 exports.GetFilesStatus = async () => {
     if (global.moduleConfig.repoPath !== undefined) {
-        console.log('getting file status from ', global.moduleConfig.repoPath);
 
         let git = require('simple-git/promise')(global.moduleConfig.repoPath);
 

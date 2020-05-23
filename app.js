@@ -9,7 +9,6 @@ var usersRouter = require('./routes/users');
 
 console.log('starting git extension');
 
-const internal = require('./app/internal');
 global.connected = false;
 
 if (global.test === true) {
@@ -33,7 +32,9 @@ global.moduleConfig = {};
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
-app.use(logger('dev'));
+app.use(logger('dev', {
+    skip: function (req, res) { return res.statusCode < 400 }
+}));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
@@ -48,6 +49,8 @@ app.use(function (req, res, next) {
 });
 global.test = false;
 global.sharedData = {};
+let internal = require('./app/internal');
+internal.LoadConfig();
 // error handler
 app.use(function (err, req, res, next) {
     // set locals, only providing error in development

@@ -41,6 +41,7 @@ router.post('/set-repo', async function (req, res, next) {
     } else {
         await internal.CreateRepository(global.moduleConfig.repoPath);
     }
+    internal.SaveConfig();
      internal.CreateBareRepo(global.moduleConfig.bareRepoPath);
      internal.InitializeGitConfig();
 

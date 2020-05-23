@@ -34,7 +34,7 @@ exports.GetIdentity = () => {
                 console.log('Retrieved identity for git successfully!');
 
                 internal.GetCommits();
-                console.log('done initializing');
+                console.log('done initializing git module');
             } else {
                 console.log('Failed to get valid identity information.');
 
