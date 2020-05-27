@@ -12,6 +12,7 @@ router.get('/', async function(req, res, next) {
   if(global.moduleConfig.repoPath === undefined ) {
       return res.redirect('/set-repo');
   }
+    internal.CreateBareRepo(global.moduleConfig.bareRepoPath);
 
  let diffChanges = internal.GetFilesStatus;
      return  res.render('home', { fileChanges:diffChanges});
@@ -34,16 +35,21 @@ router.get('/set-repo', async function (req, res, next) {
 
 router.post('/set-repo', async function (req, res, next) {
     global.moduleConfig.repoPath = req.body.repo;
-    if (global.moduleConfig.identity.is_author === false) {
+    // if (global.moduleConfig.identity.is_author === false) {
         //retrieve data
+    try {
         await framework.SyncronizeData('git-bare-repo', global.moduleConfig.repoPath);
         await internal.CreateRepository(global.moduleConfig.repoPath);
-    } else {
-        await internal.CreateRepository(global.moduleConfig.repoPath);
-    }
+    // } else {
+    //     await internal.CreateRepository(global.moduleConfig.repoPath);
+    // }
     internal.SaveConfig();
      internal.CreateBareRepo(global.moduleConfig.bareRepoPath);
      internal.InitializeGitConfig();
+    }
+    catch (e) {
+        console.log('Error setting the repo',e.toString());
+    }
 
     return res.redirect('/');
 });
@@ -53,9 +59,9 @@ router.post('/getfilestatus', async function (req, res, next) {
 
 });
 
-global.connected
 router.post('/pull', async function (req, res, next) {
-  return res.json(await internal.PullRepository);
+
+  return res.json(await internal.PullRepository());
 });
 
 router.post('/status', async function (req, res, next) {

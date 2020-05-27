@@ -82,7 +82,7 @@ exports.RetrieveSharedData = () => axios.post('http://localhost:3000/extension/r
         console.error('Error retrieving shared data:',error.toString());
     })
 
-exports.PublishData = (sourcePath, folderName) => {
+exports.PublishData = (sourcePath, folderName) =>
     // publishing data for this extension modules means we will publish hash for the bare repo
     axios.post('http://localhost:3000/extension/publish-data', {
             name: 'git',
@@ -97,12 +97,11 @@ exports.PublishData = (sourcePath, folderName) => {
         })
         .catch((error) => {
             console.error(error)
-        })
-}
+        });
 
-exports.SyncronizeData = (folderName, targetPath) => {
-    // syncronizing data for this extension modules means we will update the local repo
-    axios.post('http://localhost:3000/extension/update-data', {
+// syncronizing data for this extension modules means we will update the local repo
+
+exports.SyncronizeData = (folderName, targetPath) => axios.post('http://localhost:3000/extension/update-data', {
             name: 'git',
             path: targetPath,
             folder: folderName
@@ -112,9 +111,13 @@ exports.SyncronizeData = (folderName, targetPath) => {
             if (res.data.status) {
                 console.log('Bare repo updated successfully!');
             }
+            console.log(JSON.stringify(res.data));
+
+            return {status:res.data.status};
         })
         .catch((error) => {
+            console.log('Error synchronizing the bare repo',error.toString())
             console.error(error)
         })
-}
+
 

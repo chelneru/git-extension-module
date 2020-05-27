@@ -52,8 +52,8 @@ exports.PushRepository = async () => {
 exports.PullRepository = async () => {
     try {
         global.git = require('simple-git/promise')(global.moduleConfig.repoPath);
-
-        framework.SyncronizeData(global.moduleConfig.bareRepoPath);
+        console.log('synchronizing data..');
+        await framework.SyncronizeData('git-bare-repo',global.moduleConfig.bareRepoPath);
         await global.git.addRemote('distcollab', global.moduleConfig.bareRepoPath);
 
         await global.git.pull('distcollab');
@@ -65,7 +65,7 @@ exports.PullRepository = async () => {
         return {status: false, message: e.toString()};
 
     }
-}
+};
 exports.CommitRepository = async (message) => {
     try {
         await global.git.commit(message);
