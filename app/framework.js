@@ -79,7 +79,7 @@ exports.RetrieveSharedData = () => axios.post('http://localhost:3000/extension/r
         }
     })
     .catch((error) => {
-        console.error('Error retrieving shared data:',error.toString());
+        console.error('Error retrieving shared data for git :',error.toString());
     })
 
 exports.PublishData = (sourcePath, folderName) =>
