@@ -15,8 +15,8 @@ if (global.test === true) {
     // global.identity = {
     //     name: 'alin',
     //     email: 'alin@test.com',
-    //     folderPath: 'C:\\Users\\Alin\\distcollab',
-    //     projectPath: 'C:\\Users\\Alin\\distcollab\\project'
+    //     folderPath: 'C:\\Users\\Alin\\colligo',
+    //     projectPath: 'C:\\Users\\Alin\\colligo\\project'
     // };
     // global.moduleConfig.repoPath = global.identity.projectPath;
 } else {

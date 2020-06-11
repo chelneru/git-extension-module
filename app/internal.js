@@ -29,13 +29,13 @@ exports.PushRepository = async () => {
     try {
         global.git = require('simple-git/promise')(global.moduleConfig.repoPath);
         await global.git.getRemotes().then(function (result) {
-            if (result.findIndex(i => i.name === 'distcollab') < 0) {
-                return global.git.addRemote('distcollab', global.moduleConfig.bareRepoPath).then(function () {
-                    return global.git.push('distcollab', 'master');
+            if (result.findIndex(i => i.name === 'colligo') < 0) {
+                return global.git.addRemote('colligo', global.moduleConfig.bareRepoPath).then(function () {
+                    return global.git.push('colligo', 'master');
                 });
             }
             else {
-                return global.git.push('distcollab', 'master');
+                return global.git.push('colligo', 'master');
 
             }
         });
@@ -54,9 +54,9 @@ exports.PullRepository = async () => {
         global.git = require('simple-git/promise')(global.moduleConfig.repoPath);
         console.log('synchronizing data..');
         await framework.SyncronizeData('git-bare-repo',global.moduleConfig.bareRepoPath);
-        await global.git.addRemote('distcollab', global.moduleConfig.bareRepoPath);
+        await global.git.addRemote('colligo', global.moduleConfig.bareRepoPath);
 
-        await global.git.pull('distcollab');
+        await global.git.pull('colligo');
         return {status: true};
 
     } catch (e) {
