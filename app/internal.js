@@ -52,11 +52,23 @@ exports.PushRepository = async () => {
 exports.PullRepository = async () => {
     try {
         global.git = require('simple-git/promise')(global.moduleConfig.repoPath);
-        console.log('synchronizing data..');
+        console.log('synchronizing data..',global.moduleConfig.bareRepoPath);
         await framework.SyncronizeData('git-bare-repo',global.moduleConfig.bareRepoPath);
-        await global.git.addRemote('colligo', global.moduleConfig.bareRepoPath);
+        await global.git.getRemotes().then(async function (result) {
+            if (result.findIndex(i => i.name === 'colligo') < 0) {
+                return global.git.addRemote('colligo', global.moduleConfig.bareRepoPath).then(function () {
+                    return global.git.push('colligo', 'master');
+                });
+            }
 
-        await global.git.pull('colligo');
+            else {
+
+                await global.git.remote(['set-url','colligo',global.moduleConfig.bareRepoPath])
+                return global.git.push('colligo', 'master');
+
+            }
+        });
+        await global.git.pull('colligo','master');
         return {status: true};
 
     } catch (e) {
@@ -157,14 +169,27 @@ exports.CreateRepository = async (path) => {
     const simpleGit = require('simple-git/promise')(path);
     return simpleGit.checkIsRepo().then(function (res) {
         if (res === false) {
-            try {
-                simpleGit.init().then(function () {
-                    return {status: true};
-                });
+            //try to clone from bare repository
+            if (fs.existsSync(global.moduleConfig.bareRepoPath)) {
 
-            } catch (e) {
-                console.log('Error creating repository:',e.toString())
-                return {status: false, message: e.toString()};
+                try {
+                    global.git.clone(global.moduleConfig.repoPath, global.moduleConfig.bareRepoPath);
+                } catch
+                    (e) {
+                    console.log('Error cloning the repository for bare repo:', e.toString());
+                }
+            } else {
+                //initialize a new repository
+
+                try {
+                    simpleGit.init().then(function () {
+                        return {status: true};
+                    });
+
+                } catch (e) {
+                    console.log('Error creating repository:', e.toString())
+                    return {status: false, message: e.toString()};
+                }
             }
         }
 

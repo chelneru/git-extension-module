@@ -17,7 +17,7 @@ router.get('/', async function(req, res, next) {
 
         return res.redirect('/set-repo');
   }
-    internal.CreateBareRepo(global.moduleConfig.bareRepoPath);
+    // internal.CreateBareRepo(global.moduleConfig.bareRepoPath);
 
  let diffChanges = internal.GetFilesStatus;
      return  res.render('home', { fileChanges:diffChanges});
