@@ -27,9 +27,21 @@ exports.GetIdentity = () => {
                     is_author: res.data.identity.is_author,
                     projectPath: res.data.identity.projectPath
                 };
-
+                try {
+                if(global.moduleConfig.identity !== undefined ||
+                    (global.moduleConfig.identity.projectPath !== undefined && global.moduleConfig.identity.projectPath != new_identity.projectPath)) {
+                    global.reset_repo_path = true;
+                }
+                else {
+                    global.reset_repo_path = false;
+                }
+                }
+                catch (e) {
+                    
+                }
                 global.moduleConfig.identity = {...global.moduleConfig.identity, ...new_identity}; //update new identity
                 global.moduleConfig.bareRepoPath = path.join(global.moduleConfig.identity.projectPath, 'git-extension', 'bare-repo');
+                console.log('Bare repo set at ',global.moduleConfig.bareRepoPath)
                 internal.SaveConfig();
                 console.log('Retrieved identity for git successfully!');
 

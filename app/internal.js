@@ -39,7 +39,7 @@ exports.PushRepository = async () => {
 
             }
         });
-
+        console.log('publishing repo from bare repo ',global.moduleConfig.bareRepoPath)
         framework.PublishData(global.moduleConfig.bareRepoPath,'git-bare-repo');
     } catch (e) {
         console.log('error pushing:', e.toString());
@@ -68,6 +68,8 @@ exports.PullRepository = async () => {
 };
 exports.CommitRepository = async (message) => {
     try {
+        global.git = require('simple-git/promise')(global.moduleConfig.repoPath);
+
         await global.git.commit(message);
         exports.UpdateSharedData();
     } catch (e) {
@@ -81,6 +83,7 @@ exports.CommitRepository = async (message) => {
 //the bare repo is used to communicate with other peers in the node. We syncronize the bare repo and the local repo with work
 //will push/pull on its own bare repo.
 exports.CreateBareRepo = async (bareRepoPath) => {
+    console.log('Creating bare repo at ',bareRepoPath);
     global.git = require('simple-git/promise')();
     try {
         if (!fs.existsSync(bareRepoPath)) {
@@ -160,6 +163,7 @@ exports.CreateRepository = async (path) => {
                 });
 
             } catch (e) {
+                console.log('Error creating repository:',e.toString())
                 return {status: false, message: e.toString()};
             }
         }

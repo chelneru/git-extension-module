@@ -9,8 +9,13 @@ router.get('/', async function(req, res, next) {
     if(global.connected === false) {
         return res.redirect('/loading');
     }
-  if(global.moduleConfig.repoPath === undefined ) {
+    if (global.moduleConfig.repoPath === undefined ) {
+        console.log('Repo path not defined. Redirecting to set-repo');
       return res.redirect('/set-repo');
+  }if (global.reset_repo_path === true) {
+        console.log('Repo path needs to be refreshed. Redirecting to set-repo');
+
+        return res.redirect('/set-repo');
   }
     internal.CreateBareRepo(global.moduleConfig.bareRepoPath);
 
@@ -46,6 +51,7 @@ router.post('/set-repo', async function (req, res, next) {
     internal.SaveConfig();
      internal.CreateBareRepo(global.moduleConfig.bareRepoPath);
      internal.InitializeGitConfig();
+        global.reset_repo_path = false;
     }
     catch (e) {
         console.log('Error setting the repo',e.toString());

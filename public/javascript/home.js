@@ -41,9 +41,9 @@ $(document).ready(function () {
         });
     });
     $('.submit-commit-message').on('click', function () {
-        let message = $('#commitModal .commit-message-input').val();
+        let message = $('#commitModal .commit-message-input').html();
         console.log('commiting...."' + message + '"');
-
+        $('#commitModal .commit-message-input').text('');
         $.ajax({
             url: 'http://localhost:3001/commit',
             type: 'POST',
