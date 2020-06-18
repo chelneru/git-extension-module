@@ -43,13 +43,14 @@ router.post('/set-repo', async function (req, res, next) {
     // if (global.moduleConfig.identity.is_author === false) {
         //retrieve data
     try {
-        await framework.SyncronizeData('git-bare-repo', global.moduleConfig.repoPath);
+        await framework.SyncronizeData('git-bare-repo', global.moduleConfig.bareRepoPath);
+
         await internal.CreateRepository(global.moduleConfig.repoPath);
     // } else {
     //     await internal.CreateRepository(global.moduleConfig.repoPath);
     // }
     internal.SaveConfig();
-     internal.CreateBareRepo(global.moduleConfig.bareRepoPath);
+     internal.CreateBareRepo(global.moduleConfig.repoPath,global.moduleConfig.bareRepoPath);
      internal.InitializeGitConfig();
         global.reset_repo_path = false;
     }
