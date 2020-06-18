@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 const internal = require('../app/internal');
 const framework = require('../app/framework');
+const moment = require('moment');
 
 /* GET home page. */
 router.get('/', async function(req, res, next) {
@@ -20,7 +21,8 @@ router.get('/', async function(req, res, next) {
     // internal.CreateBareRepo(global.moduleConfig.bareRepoPath);
 
  let diffChanges = internal.GetFilesStatus;
-     return  res.render('home', { fileChanges:diffChanges});
+
+     return  res.render('home', { fileChanges:diffChanges,sync_time:global.moduleConfig.sync_time});
 });
 
 router.post('/commit', async function (req, res, next) {
@@ -62,15 +64,20 @@ router.post('/set-repo', async function (req, res, next) {
 });
 
 router.post('/getfilestatus', async function (req, res, next) {
-    return res.json(await internal.GetFilesStatus());
+    let files_status =await internal.GetFilesStatus();
+        global.moduleConfig.sync_time
+    return res.json({file_status:files_status,sync_time:global.moduleConfig.sync_time});
 
 });
 
 router.post('/pull', async function (req, res, next) {
 
-  return res.json(await internal.PullRepository());
-});
+    let result = await internal.PullRepository();
+    global.moduleConfig.sync_time = moment().format("DD-MM-YYYY, hh:mm:ss a");
+    internal.SaveConfig();
 
+    return res.json();
+});
 router.post('/status', async function (req, res, next) {
     return res.json({status:global.connected});
 });

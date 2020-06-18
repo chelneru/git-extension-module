@@ -13,7 +13,9 @@ exports.LoadConfig = () => {
             console.log('Error loading config from settings file. The file does not have valid JSON:',e.toString());
         }
     }else {
-        global.moduleConfig = {};
+        global.moduleConfig = {
+            sync_time:'N/A'
+        };
         exports.SaveConfig();
     }
 }
@@ -27,15 +29,17 @@ exports.SaveConfig = async () => {
 }
 exports.PushRepository = async () => {
     try {
-        global.git = require('simple-git/promise')(global.moduleConfig.repoPath);
-        await global.git.getRemotes().then(function (result) {
+        let git = require('simple-git/promise')(global.moduleConfig.repoPath);
+        await git.getRemotes().then(async function (result) {
             if (result.findIndex(i => i.name === 'colligo') < 0) {
-                return global.git.addRemote('colligo', global.moduleConfig.bareRepoPath).then(function () {
-                    return global.git.push('colligo', 'master');
+                return git.addRemote('colligo', global.moduleConfig.bareRepoPath).then(function () {
+                    return git.push('colligo', 'master');
                 });
             }
             else {
-                return global.git.push('colligo', 'master');
+                await git.remote(['set-url','colligo',global.moduleConfig.bareRepoPath])
+
+                return git.push('colligo', 'master');
 
             }
         });
@@ -51,24 +55,24 @@ exports.PushRepository = async () => {
 }
 exports.PullRepository = async () => {
     try {
-        global.git = require('simple-git/promise')(global.moduleConfig.repoPath);
+        let git = require('simple-git/promise')(global.moduleConfig.repoPath);
         console.log('synchronizing data..',global.moduleConfig.bareRepoPath);
         await framework.SyncronizeData('git-bare-repo',global.moduleConfig.bareRepoPath);
-        await global.git.getRemotes().then(async function (result) {
+        await git.getRemotes().then(async function (result) {
             if (result.findIndex(i => i.name === 'colligo') < 0) {
-                return global.git.addRemote('colligo', global.moduleConfig.bareRepoPath).then(function () {
-                    return global.git.push('colligo', 'master');
+                return git.addRemote('colligo', global.moduleConfig.bareRepoPath).then(function () {
+                    return git.push('colligo', 'master');
                 });
             }
 
             else {
 
-                await global.git.remote(['set-url','colligo',global.moduleConfig.bareRepoPath])
-                return global.git.push('colligo', 'master');
+                await git.remote(['set-url','colligo',global.moduleConfig.bareRepoPath])
+                return git.push('colligo', 'master');
 
             }
         });
-        await global.git.pull('colligo','master');
+        await git.pull('colligo','master');
         return {status: true};
 
     } catch (e) {
@@ -80,9 +84,9 @@ exports.PullRepository = async () => {
 };
 exports.CommitRepository = async (message) => {
     try {
-        global.git = require('simple-git/promise')(global.moduleConfig.repoPath);
+        let git = require('simple-git/promise')(global.moduleConfig.repoPath);
 
-        await global.git.commit(message);
+        await git.commit(message);
         exports.UpdateSharedData();
     } catch (e) {
         console.log('error committing:', e.toString());
@@ -96,10 +100,10 @@ exports.CommitRepository = async (message) => {
 //will push/pull on its own bare repo.
 exports.CreateBareRepo = async (bareRepoPath) => {
     console.log('Creating bare repo at ',bareRepoPath);
-    global.git = require('simple-git/promise')();
+    let git = require('simple-git/promise')();
     try {
         if (!fs.existsSync(bareRepoPath)) {
-            global.git.clone(global.moduleConfig.repoPath, bareRepoPath, ['--bare']);
+            git.clone(global.moduleConfig.repoPath, bareRepoPath, ['--bare']);
         }
 
     } catch (e) {
@@ -132,16 +136,16 @@ exports.CreateEmptyRepository = (projectPath) => {
 }
 exports.InitializeGitConfig = async () => {
     try {
-        global.git = require('simple-git/promise')(global.moduleConfig.repoPath);
-        global.git.cwd(global.moduleConfig.repoPath);
+        let git = require('simple-git/promise')(global.moduleConfig.repoPath);
+        await git.cwd(global.moduleConfig.repoPath);
 
-        return global.git.listConfig().then(function (result) {
+        return git.listConfig().then(function (result) {
 
             if (!result.all.hasOwnProperty('user.name')) {
-                global.git.addConfig('user.name', global.identity.name);
+                git.addConfig('user.name', global.identity.name);
             }
             if (!result.all.hasOwnProperty('user.email')) {
-                global.git.addConfig('user.email', global.identity.name);
+                git.addConfig('user.email', global.identity.name);
             }
         });
     } catch (e) {
@@ -165,24 +169,28 @@ exports.GetFilesStatus = async () => {
     }
 }
 
-exports.CreateRepository = async (path) => {
-    const simpleGit = require('simple-git/promise')(path);
-    return simpleGit.checkIsRepo().then(function (res) {
+exports.CreateRepository = async (repoPath) => {
+    try {
+    if(!fs.existsSync(repoPath)) {
+        fs.mkdirSync(repoPath,{recursive:true});
+
+    }
+    const git = require('simple-git/promise')(repoPath);
+    return git.checkIsRepo().then(function (res) {
         if (res === false) {
             //try to clone from bare repository
             if (fs.existsSync(global.moduleConfig.bareRepoPath)) {
 
                 try {
-                    global.git.clone(global.moduleConfig.repoPath, global.moduleConfig.bareRepoPath);
+                    git.clone(global.moduleConfig.repoPath, global.moduleConfig.bareRepoPath);
                 } catch
                     (e) {
                     console.log('Error cloning the repository for bare repo:', e.toString());
                 }
             } else {
                 //initialize a new repository
-
                 try {
-                    simpleGit.init().then(function () {
+                    git.init().then(function () {
                         return {status: true};
                     });
 
@@ -194,6 +202,9 @@ exports.CreateRepository = async (path) => {
         }
 
     })
+    }catch (e) {
+        console.log('Error creating repository at ',repoPath,':',e.toString())
+    }
 }
 exports.isDirEmpty = async (dirname) => {
     return fs.promises.readdir(dirname).then(files => {
@@ -233,19 +244,32 @@ exports.ParseGitStatus = (raw_result) => {
     }
     return parsedResult;
 }
-exports.GetCommits = () => {
+exports.GetCommits = async () => {
     try {
-        const git = require('simple-git')(global.moduleConfig.repoPath);
-
-        return git.log({multiLine: true}, (err, gitLog) => {
-            return gitLog;
-        });
+        const git = require('simple-git/promise')(global.moduleConfig.repoPath);
+        return await git.log({multiLine: true});
     } catch (e) {
         console.log('Error retrieving commits:', e.toString());
     }
 }
 
-exports.UpdateSharedData = () => {
-    global.sharedData.commits = exports.GetCommits();
-    console.log(global.sharedData.commits);
+
+exports.UpdateSharedData = async () => {
+    if(global.periodic_commits_update !== true) {
+        global.periodic_commits_update = true;
+        setInterval(
+            async function () {
+                if(global.moduleConfig.bareRepoPath !== undefined)
+                global.sharedData.commits = await exports.GetCommits();
+                if(global.sharedData.commits !== undefined) {
+                global.sharedData.commits = global.sharedData.commits.all.map(function (el) {
+                    return el.hash.slice(0,9);
+                });
+                // console.log('Current commits: ',JSON.stringify(global.sharedData.commits));
+                framework.PublishSharedData(global.sharedData.commits);
+                }
+            },5000
+        )
+    }
+
 }

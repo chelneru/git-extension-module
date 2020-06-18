@@ -95,12 +95,16 @@ function GetFileStatus() {
         type: 'POST',
         dataType: 'json',
         success(response) {
-            AddFileRows(response);
-
+            try {
+            AddFileRows(response.file_status);
+                    $('.sync-time-row').find('.row-value').text(response.sync_time);
             if (getFileStatusInterval === null) {
                 getFileStatusInterval = setInterval(function () {
                     GetFileStatus();
                 }, 5000);
+            }
+            }catch (e) {
+                console.log('Error processing file status and sync time.',e.toString())
             }
         },
         error(jqXHR, status, errorThrown) {

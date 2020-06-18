@@ -28,16 +28,15 @@ exports.GetIdentity = () => {
                     projectPath: res.data.identity.projectPath
                 };
                 try {
-                if(global.moduleConfig.identity !== undefined ||
-                    (global.moduleConfig.identity.projectPath !== undefined && global.moduleConfig.identity.projectPath != new_identity.projectPath)) {
-                    global.reset_repo_path = true;
-                }
-                else {
-                    global.reset_repo_path = false;
-                }
-                }
-                catch (e) {
-                    
+                    if (global.moduleConfig.identity !== undefined){
+
+                       if (global.moduleConfig.identity.projectPath != new_identity.projectPath) {
+                        global.reset_repo_path = true;
+                    } else {
+                        global.reset_repo_path = false;
+                    }}
+                } catch (e) {
+
                 }
                 global.moduleConfig.identity = {...global.moduleConfig.identity, ...new_identity}; //update new identity
                 global.moduleConfig.bareRepoPath = path.join(global.moduleConfig.identity.projectPath, 'git-extension', 'bare-repo');
@@ -123,7 +122,7 @@ exports.SyncronizeData = (folderName, targetPath) => axios.post('http://localhos
             if (res.data.status) {
                 console.log('Bare repo updated successfully!');
             }
-            console.log(JSON.stringify(res.data));
+            // console.log(JSON.stringify(res.data));
 
             return {status:res.data.status};
         })

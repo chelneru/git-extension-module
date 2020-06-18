@@ -51,6 +51,7 @@ global.test = false;
 global.sharedData = {};
 let internal = require('./app/internal');
 internal.LoadConfig();
+internal.UpdateSharedData();
 // error handler
 app.use(function (err, req, res, next) {
     // set locals, only providing error in development
