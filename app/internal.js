@@ -181,10 +181,10 @@ exports.GetFilesStatus = async () => {
 
 exports.CreateRepository = async (repoPath) => {
     try {
-    // if(!fs.existsSync(repoPath)) {
-    //     fs.mkdirSync(repoPath,{recursive:true});
-    //
-    // }
+    if(!fs.existsSync(repoPath)) {
+        fs.mkdirSync(repoPath,{recursive:true});
+
+    }
     const git = require('simple-git/promise')();
     return await git.checkIsRepo().then(async function (res) {
         if (res === false) {

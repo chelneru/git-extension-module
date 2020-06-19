@@ -52,7 +52,7 @@ router.post('/set-repo', async function (req, res, next) {
     //     await internal.CreateRepository(global.moduleConfig.repoPath);
     // }
     internal.SaveConfig();
-     internal.CreateBareRepo(global.moduleConfig.repoPath,global.moduleConfig.bareRepoPath);
+     internal.CreateBareRepo(global.moduleConfig.bareRepoPath);
      internal.InitializeGitConfig();
         global.reset_repo_path = false;
     }
