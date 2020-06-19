@@ -10,7 +10,7 @@ exports.LoadConfig = () => {
             let rawdata = fs.readFileSync(path.join(appRoot, 'settings.json'));
             global.moduleConfig = JSON.parse(rawdata.toString());
         }catch (e) {
-            console.log('Error loading config from settings file. The file does not have valid JSON:',e.toString());
+            // console.log('Error loading config from settings file. The file does not have valid JSON:',e.toString());
             global.moduleConfig = {
                 sync_time:'TBD'
             };
@@ -261,7 +261,7 @@ exports.GetCommits = async () => {
         return await git.log({multiLine: true});
         }
         else{
-            console.log('Git : Unable to retrieve commits, folder '+global.moduleConfig.repoPath+' doesnt exist');
+            // console.log('Git : Unable to retrieve commits, folder '+global.moduleConfig.repoPath+' doesnt exist');
             return undefined;
         }
     } catch (e) {
