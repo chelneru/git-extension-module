@@ -185,7 +185,7 @@ exports.CreateRepository = async (repoPath) => {
         fs.mkdirSync(repoPath,{recursive:true});
 
     }
-    const git = require('simple-git/promise')();
+    const git = require('simple-git/promise')(repoPath);
     return await git.checkIsRepo().then(async function (res) {
         if (res === false) {
             //try to clone from bare repository
