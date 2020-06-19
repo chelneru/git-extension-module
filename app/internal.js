@@ -192,7 +192,7 @@ exports.CreateRepository = async (repoPath) => {
             if (fs.existsSync(global.moduleConfig.bareRepoPath)) {
 
                 try {
-                    await git.clone(global.moduleConfig.repoPath, global.moduleConfig.bareRepoPath);
+                    await git.clone(global.moduleConfig.bareRepoPath,global.moduleConfig.repoPath);
                 } catch
                     (e) {
                     console.log('Git: Error cloning the repository for bare repo:', e.toString());
