@@ -99,10 +99,11 @@ exports.CommitRepository = async (message) => {
 //the bare repo is used to communicate with other peers in the node. We syncronize the bare repo and the local repo with work
 //will push/pull on its own bare repo.
 exports.CreateBareRepo = async (bareRepoPath) => {
-    console.log('Creating bare repo at ',bareRepoPath);
     let git = require('simple-git/promise')();
     try {
         if (!fs.existsSync(bareRepoPath)) {
+            console.log('Creating bare repo at ',bareRepoPath);
+
             git.clone(global.moduleConfig.repoPath, bareRepoPath, ['--bare']);
         }
 
@@ -171,10 +172,10 @@ exports.GetFilesStatus = async () => {
 
 exports.CreateRepository = async (repoPath) => {
     try {
-    if(!fs.existsSync(repoPath)) {
-        fs.mkdirSync(repoPath,{recursive:true});
-
-    }
+    // if(!fs.existsSync(repoPath)) {
+    //     fs.mkdirSync(repoPath,{recursive:true});
+    //
+    // }
     const git = require('simple-git/promise')(repoPath);
     return git.checkIsRepo().then(function (res) {
         if (res === false) {
