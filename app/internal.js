@@ -106,9 +106,9 @@ exports.CreateBareRepo = async (bareRepoPath) => {
     let git = require('simple-git/promise')();
     try {
         if (!fs.existsSync(bareRepoPath)) {
-            console.log('Creating bare repo at ',bareRepoPath);
+            console.log('Git: Creating bare repo at ',bareRepoPath);
 
-            git.clone(global.moduleConfig.repoPath, bareRepoPath, ['--bare']);
+            await git.clone(global.moduleConfig.repoPath, bareRepoPath, ['--bare']);
         }
 
     } catch (e) {
@@ -164,7 +164,7 @@ exports.InitializeGitConfig = async () => {
     }
 }
 exports.GetFilesStatus = async () => {
-    if (global.moduleConfig.repoPath !== undefined) {
+    if (global.moduleConfig.repoPath !== undefined && fs.existsSync(global.moduleConfig.repoPath)) {
 
         let git = require('simple-git/promise')(global.moduleConfig.repoPath);
 
@@ -186,13 +186,13 @@ exports.CreateRepository = async (repoPath) => {
     //
     // }
     const git = require('simple-git/promise')();
-    return git.checkIsRepo().then(function (res) {
+    return await git.checkIsRepo().then(async function (res) {
         if (res === false) {
             //try to clone from bare repository
             if (fs.existsSync(global.moduleConfig.bareRepoPath)) {
 
                 try {
-                    git.clone(global.moduleConfig.repoPath, global.moduleConfig.bareRepoPath);
+                    await git.clone(global.moduleConfig.repoPath, global.moduleConfig.bareRepoPath);
                 } catch
                     (e) {
                     console.log('Git: Error cloning the repository for bare repo:', e.toString());
@@ -200,7 +200,7 @@ exports.CreateRepository = async (repoPath) => {
             } else {
                 //initialize a new repository
                 try {
-                    git.init().then(function () {
+                    await git.init().then(function () {
                         return {status: true};
                     });
 
@@ -256,7 +256,7 @@ exports.ParseGitStatus = (raw_result) => {
 }
 exports.GetCommits = async () => {
     try {
-        if(fs.existsSync(global.moduleConfig.repoPath)) {
+        if(fs.existsSync(global.moduleConfig.repoPath) && global.moduleConfig.repoPath !== undefined) {
         const git = require('simple-git/promise')(global.moduleConfig.repoPath);
         return await git.log({multiLine: true});
         }
