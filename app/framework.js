@@ -40,7 +40,7 @@ exports.GetIdentity = () => {
                 }
                 global.moduleConfig.identity = {...global.moduleConfig.identity, ...new_identity}; //update new identity
                 global.moduleConfig.bareRepoPath = path.join(global.moduleConfig.identity.projectPath, 'git-extension', 'bare-repo');
-                console.log('Bare repo set at ',global.moduleConfig.bareRepoPath)
+                console.log('Git: From identity, Bare repo path is ',global.moduleConfig.bareRepoPath)
                 internal.SaveConfig();
                 console.log('Retrieved identity for git successfully!');
 
@@ -120,7 +120,7 @@ exports.SyncronizeData = (folderName, targetPath) => axios.post('http://localhos
     )
         .then((res) => {
             if (res.data.status) {
-                console.log('Bare repo updated successfully!');
+                console.log('Git : Bare repo folder updated successfully!');
             }
             // console.log(JSON.stringify(res.data));
 

@@ -11,10 +11,14 @@ exports.LoadConfig = () => {
             global.moduleConfig = JSON.parse(rawdata.toString());
         }catch (e) {
             console.log('Error loading config from settings file. The file does not have valid JSON:',e.toString());
+            global.moduleConfig = {
+                sync_time:'TBD'
+            };
+            exports.SaveConfig();
         }
     }else {
         global.moduleConfig = {
-            sync_time:'N/A'
+            sync_time:'TBD'
         };
         exports.SaveConfig();
     }
@@ -137,6 +141,7 @@ exports.CreateEmptyRepository = (projectPath) => {
 }
 exports.InitializeGitConfig = async () => {
     try {
+        if(fs.existsSync(global.moduleConfig.repoPath)) {
         let git = require('simple-git/promise')(global.moduleConfig.repoPath);
         await git.cwd(global.moduleConfig.repoPath);
 
@@ -149,6 +154,10 @@ exports.InitializeGitConfig = async () => {
                 git.addConfig('user.email', global.identity.name);
             }
         });
+        }
+        else{
+            console.log('Git : Error setting initial config, folder '+global.moduleConfig.repoPath+' doesnt exist');
+        }
     } catch (e) {
         console.log('Error setting initial git config in ' + global.moduleConfig.repoPath + ':', e.toString());
 
@@ -176,7 +185,7 @@ exports.CreateRepository = async (repoPath) => {
     //     fs.mkdirSync(repoPath,{recursive:true});
     //
     // }
-    const git = require('simple-git/promise')(repoPath);
+    const git = require('simple-git/promise')();
     return git.checkIsRepo().then(function (res) {
         if (res === false) {
             //try to clone from bare repository
@@ -186,7 +195,7 @@ exports.CreateRepository = async (repoPath) => {
                     git.clone(global.moduleConfig.repoPath, global.moduleConfig.bareRepoPath);
                 } catch
                     (e) {
-                    console.log('Error cloning the repository for bare repo:', e.toString());
+                    console.log('Git: Error cloning the repository for bare repo:', e.toString());
                 }
             } else {
                 //initialize a new repository
@@ -196,7 +205,7 @@ exports.CreateRepository = async (repoPath) => {
                     });
 
                 } catch (e) {
-                    console.log('Error creating repository:', e.toString())
+                    console.log('Git: Error creating repository:', e.toString())
                     return {status: false, message: e.toString()};
                 }
             }
@@ -247,8 +256,14 @@ exports.ParseGitStatus = (raw_result) => {
 }
 exports.GetCommits = async () => {
     try {
+        if(fs.existsSync(global.moduleConfig.repoPath)) {
         const git = require('simple-git/promise')(global.moduleConfig.repoPath);
         return await git.log({multiLine: true});
+        }
+        else{
+            console.log('Git : Unable to retrieve commits, folder '+global.moduleConfig.repoPath+' doesnt exist');
+            return undefined;
+        }
     } catch (e) {
         console.log('Error retrieving commits:', e.toString());
     }
