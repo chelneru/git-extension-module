@@ -71,7 +71,9 @@ exports.PublishSharedData = (sharedData) => {
     )
         .then((res) => {
             if (res.data.status) {
-                console.log('Shared data published successfully!');
+                console.log('Git: Shared data published successfully!');
+                setTimeout(internal.UpdateSharedData,10000);
+
             }
         })
         .catch((error) => {

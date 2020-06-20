@@ -271,21 +271,15 @@ exports.GetCommits = async () => {
 
 
 exports.UpdateSharedData = async () => {
-    if(global.periodic_commits_update !== true) {
-        global.periodic_commits_update = true;
-        setInterval(
-            async function () {
+
                 if(global.moduleConfig.bareRepoPath !== undefined)
                 global.sharedData.commits = await exports.GetCommits();
                 if(global.sharedData.commits !== undefined) {
                 global.sharedData.commits = global.sharedData.commits.all.map(function (el) {
-                    return el.hash.slice(0,9);
+                    return el.hash.slice(0,7);
                 });
                 // console.log('Current commits: ',JSON.stringify(global.sharedData.commits));
                 framework.PublishSharedData(global.sharedData.commits);
                 }
-            },5000
-        )
-    }
 
 }
