@@ -48,7 +48,6 @@ exports.GetIdentity = () => {
                 console.log('done initializing git module');
             } else {
                 console.log('Failed to get valid identity information.');
-
             }
         })
         .catch((error) => {
@@ -72,9 +71,10 @@ exports.PublishSharedData = (sharedData) => {
         .then((res) => {
             if (res.data.status) {
                 console.log('Git: Shared data published successfully!');
-                setTimeout(internal.UpdateSharedData,10000);
 
             }
+            setTimeout(internal.UpdateSharedData,10000);
+
         })
         .catch((error) => {
             console.error(error)

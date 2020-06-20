@@ -266,6 +266,7 @@ exports.GetCommits = async () => {
         }
     } catch (e) {
         console.log('Error retrieving commits:', e.toString());
+        return undefined;
     }
 }
 
